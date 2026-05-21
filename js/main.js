@@ -176,32 +176,45 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
 });
 
 /* ══ CONTACT FORM ══ */
+const contactForm = document.getElementById("contact-form");
 const submitBtn = document.getElementById("form-submit-btn");
 const formSuccess = document.getElementById("form-success");
+const hiddenIframe = document.getElementById("hidden_iframe");
+let submitted = false;
 
-submitBtn.addEventListener("click", () => {
-  const name = document.getElementById("contact-name").value.trim();
-  const email = document.getElementById("contact-email").value.trim();
-  const message = document.getElementById("contact-message").value.trim();
+if (hiddenIframe) {
+  hiddenIframe.addEventListener("load", function() {
+    if (submitted) {
+      submitBtn.style.display = "none";
+      formSuccess.classList.add("show");
+      spawnConfetti(submitBtn);
+      contactForm.reset();
+      submitted = false;
+    }
+  });
+}
 
-  if (!name || !email || !message) {
-    [["contact-name", name], ["contact-email", email], ["contact-message", message]].forEach(([id, val]) => {
-      if (!val) {
-        const el = document.getElementById(id);
-        el.style.borderColor = "rgba(220,38,38,0.5)";
-        setTimeout(() => { el.style.borderColor = ""; }, 1000);
-      }
-    });
-    return;
-  }
+if (contactForm) {
+  contactForm.addEventListener("submit", (e) => {
+    const name = document.getElementById("contact-name").value.trim();
+    const email = document.getElementById("contact-email").value.trim();
+    const message = document.getElementById("contact-message").value.trim();
 
-  const subject = encodeURIComponent(`Portfolio contact from ${name}`);
-  const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`);
-  window.location.href = `mailto:nikhilvishwan91@gmail.com?subject=${subject}&body=${body}`;
-  submitBtn.style.display = "none";
-  formSuccess.classList.add("show");
-  spawnConfetti(submitBtn);
-});
+    if (!name || !email || !message) {
+      e.preventDefault();
+      [["contact-name", name], ["contact-email", email], ["contact-message", message]].forEach(([id, val]) => {
+        if (!val) {
+          const el = document.getElementById(id);
+          el.style.borderColor = "rgba(220,38,38,0.5)";
+          setTimeout(() => { el.style.borderColor = ""; }, 1000);
+        }
+      });
+      return;
+    }
+
+    submitted = true;
+  });
+}
 
 /* ══ SKILL TAG ENTRANCE ══ */
 document.querySelectorAll(".stag-dark, .stag").forEach((el, i) => {
